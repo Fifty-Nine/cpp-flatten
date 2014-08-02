@@ -54,7 +54,16 @@ IntListListList example1_values()
     return values;
 }
 
-BOOST_AUTO_TEST_CASE(example1)
+std::multimap<int, int> example2_values()
+{
+    std::multimap<int, int> result;
+    result.insert(std::make_pair(1, 2));
+    result.insert(std::make_pair(1, 3));
+    result.insert(std::make_pair(2, 4));
+    return result;
+}
+
+BOOST_AUTO_TEST_CASE(basic)
 {
     IntListListList values = example1_values();
     IntList result;
@@ -70,3 +79,16 @@ BOOST_AUTO_TEST_CASE(example1)
     }
 }
 
+BOOST_AUTO_TEST_CASE(map)
+{
+    std::multimap<int, int> values = example2_values();
+    IntList result;
+    flatten::flatten<int>(
+        values.begin(), values.end(), std::back_inserter(result)
+    );
+
+    BOOST_REQUIRE(result.size() == 3);
+    BOOST_CHECK_EQUAL(result[0], 2);
+    BOOST_CHECK_EQUAL(result[1], 3);
+    BOOST_CHECK_EQUAL(result[2], 4);
+}
