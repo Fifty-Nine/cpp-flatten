@@ -10,6 +10,26 @@ namespace flatten
 namespace detail
 {
 
+template<class T>
+struct container_traits
+{
+    typedef typename T::const_iterator iterator;
+    typedef typename std::iterator_traits<iterator>::value_type value_type;
+
+    static iterator begin(const T& t) { return t.begin(); }
+    static iterator end(const T& t) { return t.end(); }
+};
+
+template<class T, class S>
+struct container_traits<std::pair<T, S> >
+{
+    typedef const S* iterator;
+    typedef S value_type;
+
+    static iterator begin(const std::pair<T, S>& v) { return &v.second; }
+    static iterator end(const std::pair<T, S>& v) { return &v.second + 1; }
+};
+
 template<class InType, class OutType>
 struct flatten_impl
 {
@@ -20,44 +40,12 @@ struct flatten_impl
     {
         for (InputIterator it = begin; it != end; ++it)
         {
-            typedef typename InType::const_iterator SubIt;
-            typedef typename std::iterator_traits<SubIt>::value_type SubType;
-            flatten_impl<SubType, OutType>::flatten(
-                it->begin(), it->end(), out
-            );
-        }
-    }
-};
+            typedef typename container_traits<InType>::iterator SubIt;
+            typedef typename container_traits<InType>::value_type SubType;
 
-template<class T, class V, class OutType>
-struct flatten_impl<std::pair<T, V>, OutType> 
-{ 
-    template<class InputIterator, class OutputIterator>
-    static void flatten(const std::pair<T, V>& v, OutputIterator out,
-        typename std::iterator_traits<InputIterator>::value_type::const_iterator* sfinae = 0)
-    {
-        typedef typename V::const_iterator SubIt;
-        typedef typename std::iterator_traits<SubIt>::value_type SubType;
-        flatten_impl<SubType, OutType>::flatten(
-            v.second.begin(), v.second.end(), out
-        );
-    }
-
-    template<class OutputIterator>
-    static void flatten(const std::pair<T, V>& v, OutputIterator out)
-    {
-        *out++ = v.second;
-    }
-
-    template<class InputIterator, class OutputIterator>
-    static void flatten(
-        InputIterator begin, InputIterator end,
-        OutputIterator out
-    )
-    {
-        for (InputIterator it = begin; it != end; ++it)
-        {
-            flatten(*it, out);
+            SubIt begin = container_traits<InType>::begin(*it);
+            SubIt end = container_traits<InType>::end(*it);
+            flatten_impl<SubType, OutType>::flatten(begin, end, out);
         }
     }
 };
