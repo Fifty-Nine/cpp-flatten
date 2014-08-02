@@ -1,8 +1,8 @@
-== cpp-flatten ==
+## cpp-flatten ##
 An header-only C++98 (or better) library that provides a function that
 flattens nested sequences.
 
-=== Synopsis ===
+### Synopsis ###
 This library consists of one header file (`flatten.hpp`) which provides one
 user-visible template function:
 
@@ -73,7 +73,7 @@ flatten::flatten<IntList>(
 );
 `````
 
-=== Installation ===
+### Installation ###
 Flatten is a header-only library, so all you really need to do is copy 
 flatten.hpp to wherever's convenient. However, if you'd like to install 
 it into your system includes, you can install flatten with CMake. For
@@ -96,7 +96,7 @@ $ make check
 If you run into issues, make sure CMake can find your CppUnit library
 and headers. Otherwise...
 
-=== Reporting Bugs === 
+### Reporting Bugs ### 
 If you run into issues (bugs, compilation errors, unit test failures, etc.),
 feel free to create an issue in GitHub's issue tracker. Please provide any
 relevant details, like:
