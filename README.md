@@ -1,5 +1,5 @@
 ## cpp-flatten 
-An header-only C++98 (or better) library that provides a function that
+An header-only C++98 (or better) library that provides an STL-like function that
 flattens nested sequences.
 
 ### Synopsis 
@@ -12,7 +12,7 @@ user-visible template function:
 Given an iterator to an arbitrarily nested sequence, the function will produce
 a flat sequence with values of type T. For example:
 
-`````
+`````cpp
 typedef std::vector<int> IntList;
 typedef std::vector<IntList> IntListList;
 typedef std::vector<IntList> IntListListList;
@@ -30,13 +30,13 @@ flatten::flatten<int>(values.begin(), values.end(), out);
 
 When run, this snippet will print this sequence to std::out:
 
-`````
+`````cpp
 1 2 3 4 5 6 7 8 9
 `````
 
 You can use a std::back\_inserter to convert to flattened list:
 
-`````
+`````cpp
 template<class NestedList>
 std::vector<int> flatten_vector(const NestedList& in)
 {
@@ -48,7 +48,7 @@ std::vector<int> flatten_vector(const NestedList& in)
 
 `flatten` also supports flattening the values (though not the keys) in a map:
 
-`````
+`````cpp
 std::multimap<int, int> values = { { 1, 2 }, { 1, 3 }, { 2, 4} };
 std::ostream_iterator<int> out(std::cout, " ");
 flatten::flatten<int>(values.begin(), values.end(), out);
@@ -56,14 +56,14 @@ flatten::flatten<int>(values.begin(), values.end(), out);
 
 Produces:
 
-`````
+`````cpp
 2 3 4
 `````
 
 Finally, `flatten` doesn't have to flatten a list entirely. Calling `flatten`
 with `T = some list type` works too:
 
-`````
+`````cpp
 IntListListList values = { /* */ };
 IntListList flattened;
 flatten::flatten<IntList>(
@@ -79,7 +79,7 @@ flatten.hpp to wherever's convenient. However, if you'd like to install
 it into your system includes, you can install flatten with CMake. For
 instance, on a Debian system:
 
-`````
+`````bash
 $ cmake <path-to-flatten-repo>
 $ make
 $ sudo make install
@@ -88,7 +88,7 @@ $ sudo make install
 The library also provides some unit tests, which require that CppUnit be
 installed on your system. You can build and run the unit tests with CMake:
 
-`````
+`````bash
 $ cmake <path-to-flatten-repo>
 $ make check
 `````
