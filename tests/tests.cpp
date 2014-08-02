@@ -125,3 +125,35 @@ BOOST_AUTO_TEST_CASE(nested_map)
     BOOST_CHECK_EQUAL(result[4], 3);
     BOOST_CHECK_EQUAL(result[5], 4);
 }
+
+/* An iterator that asserts when you dereference it. */
+struct fatal_iterator : 
+    public std::iterator<
+        std::output_iterator_tag,
+        void, void, void, void
+    >
+{
+    fatal_iterator operator*() const
+    {
+        BOOST_ERROR("Dereferencing fatal_iterator");
+    }
+
+    fatal_iterator operator++() { return fatal_iterator(); }
+    fatal_iterator operator++(int) { return fatal_iterator(); }
+    template<class T>
+    fatal_iterator& operator=(const T&) { return *this; }
+};
+
+BOOST_AUTO_TEST_CASE(nested_empty)
+{
+    IntListListList il;
+    il.push_back(IntListList());
+
+    IntListList n;
+    n.push_back(IntList());
+    n.push_back(IntList());
+    il.push_back(n);
+
+    /* Verify we don't write anything to the output. */
+    flatten::flatten<int>(il.begin(), il.end(), fatal_iterator());
+};
