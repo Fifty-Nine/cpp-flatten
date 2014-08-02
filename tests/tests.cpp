@@ -12,6 +12,17 @@
 typedef std::vector<int> IntList;
 typedef std::vector<IntList> IntListList;
 typedef std::vector<IntListList> IntListListList;
+typedef std::multimap<int, int> IntMap;
+typedef std::multimap<int, IntMap> IntMapMap;
+
+template<class C>
+IntList simple_flatten(const C& c)
+{
+    IntList result;
+    flatten::flatten<int>(
+        c.begin(), c.end(), std::back_inserter(result));
+    return result;
+}
 
 IntListListList example1_values()
 {
@@ -54,7 +65,7 @@ IntListListList example1_values()
     return values;
 }
 
-std::multimap<int, int> example2_values()
+IntMap example2_values()
 {
     std::multimap<int, int> result;
     result.insert(std::make_pair(1, 2));
@@ -81,14 +92,36 @@ BOOST_AUTO_TEST_CASE(basic)
 
 BOOST_AUTO_TEST_CASE(map)
 {
-    std::multimap<int, int> values = example2_values();
+    IntMap values = example2_values();
     IntList result;
     flatten::flatten<int>(
         values.begin(), values.end(), std::back_inserter(result)
     );
 
-    BOOST_REQUIRE(result.size() == 3);
+    BOOST_REQUIRE_EQUAL(result.size(), 3);
     BOOST_CHECK_EQUAL(result[0], 2);
     BOOST_CHECK_EQUAL(result[1], 3);
     BOOST_CHECK_EQUAL(result[2], 4);
+}
+
+BOOST_AUTO_TEST_CASE(nested_map)
+{
+    IntMapMap values;
+    IntMap v2;
+    v2.insert(std::make_pair(0, 7));
+    v2.insert(std::make_pair(0, 8));
+    v2.insert(std::make_pair(0, 9));
+    values.insert(std::make_pair(2, example2_values()));
+    values.insert(std::make_pair(1, v2));
+    values.insert(std::make_pair(0, IntMap()));
+   
+    IntList result = simple_flatten(values);
+
+    BOOST_REQUIRE_EQUAL(result.size(), 6);
+    BOOST_CHECK_EQUAL(result[0], 7);
+    BOOST_CHECK_EQUAL(result[1], 8);
+    BOOST_CHECK_EQUAL(result[2], 9);
+    BOOST_CHECK_EQUAL(result[3], 2);
+    BOOST_CHECK_EQUAL(result[4], 3);
+    BOOST_CHECK_EQUAL(result[5], 4);
 }
