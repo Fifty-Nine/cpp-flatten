@@ -85,8 +85,9 @@ $ make
 $ sudo make install
 `````
 
-The library also provides some unit tests, which require that CppUnit be
-installed on your system. You can build and run the unit tests with CMake:
+The library also provides some unit tests, which require that the boost
+unit test framework libraries be installed on your system. You can build 
+and run the unit tests with CMake:
 
 `````bash
 $ cmake <path-to-flatten-repo>
