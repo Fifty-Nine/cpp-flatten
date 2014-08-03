@@ -15,6 +15,25 @@ typedef std::vector<IntListList> IntListListList;
 typedef std::multimap<int, int> IntMap;
 typedef std::multimap<int, IntMap> IntMapMap;
 
+namespace boost 
+{
+
+namespace test_tools
+{
+
+template<> 
+struct print_log_value<IntList>
+{
+    void operator()(std::ostream& os, const IntList& l)
+    {
+        std::copy(l.begin(), l.end(), std::ostream_iterator<int>(os, " "));
+    }
+};
+
+}
+
+}
+
 template<class C>
 IntList simple_flatten(const C& c)
 {
@@ -156,4 +175,20 @@ BOOST_AUTO_TEST_CASE(nested_empty)
 
     /* Verify we don't write anything to the output. */
     flatten::flatten<int>(il.begin(), il.end(), fatal_iterator());
-};
+}
+
+BOOST_AUTO_TEST_CASE(preserve_empty_seq)
+{
+    std::map<int, IntListList> values;
+    IntListList v0;
+    v0.push_back(IntList());
+    values.insert(make_pair(0, v0));
+
+    IntListList result;
+    flatten::flatten<IntList>(
+        values.begin(), values.end(), std::back_inserter(result)
+    );
+
+    BOOST_REQUIRE_EQUAL(result.size(), 1);
+    BOOST_CHECK_EQUAL(result[0], IntList());
+}
